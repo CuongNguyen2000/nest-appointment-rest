@@ -3,18 +3,22 @@ import { AppointmentsService } from './appointments.service';
 import { createApptDTO } from './dto/createAppt.dto';
 import { updateApptDTO } from './dto/updateAppt.dto';
 import { getApptsDTO } from './dto/appts.dto';
+import { ApiResponse, ApiTags } from '@nestjs/swagger'
 
 @Controller('appointments')
+@ApiTags('Appointments')
 export class AppointmentsController {
     constructor(private readonly apptService: AppointmentsService) {}
 
     @Get()
+    @ApiResponse({ status: 200, description: 'OK'})
     async findAllAppts() {
         const appts = await this.apptService.appointments();
         return appts;
     }
 
     @Get(':id')
+    @ApiResponse({ status: 200, description: 'OK'})
     async findOneAppt(@Param('id') id: string) {
         const appt = await this.apptService.appointment(id);
         return appt;
@@ -38,7 +42,8 @@ export class AppointmentsController {
         return apptUpdated;
     }
 
-    @Delete('deleteUser/:id')
+    @Delete('deleteAppt/:id')
+    @ApiResponse({ status: 200, description: 'Delete Success'})
     async deleteOneAppt(@Param('id') id: string) {
         const apptDeleted = await this.apptService.deleteAppt(id);
         return apptDeleted;

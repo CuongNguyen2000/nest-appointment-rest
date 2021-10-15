@@ -1,15 +1,18 @@
-import { IsString } from 'class-validator';
+import { IsString, MaxLength } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
 
 export class updateApptDTO {
-    @IsString()
-    id: string;
 
+    @ApiProperty()
     @IsString()
+    @MaxLength(50)
     name: string;
 
+    @ApiProperty()
     @IsString()
     start_date: string;
 
+    @ApiProperty()
     @IsString()
     end_date: string;
 }
