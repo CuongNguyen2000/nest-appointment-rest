@@ -4,7 +4,7 @@ import { AppointmentsController } from './appointments.controller';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
-  providers: [AppointmentsService, PrismaService],
-  controllers: [AppointmentsController],
+    providers: [AppointmentsService, PrismaService],
+    controllers: [AppointmentsController],
 })
 export class AppointmentsModule {}

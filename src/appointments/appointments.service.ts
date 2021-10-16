@@ -16,29 +16,19 @@ export class AppointmentsService {
     constructor(private prisma: PrismaService) { }
 
     // Get a single appointment
-    async appointment(id: string): Promise<Appointment | null> {
+    async appointment(id: number): Promise<Appointment> {
         const appt = await this.prisma.appointment.findUnique({
             where: {
-                id: parseInt(id),
+                id: id,
             },
             include: {
                 user: true, // Return all fields
             },
         });
 
-        if (!appt) throw new ApptNotFoundException(parseInt(id));
+        if (!appt) throw new ApptNotFoundException(id);
 
         return appt;
-    }
-
-    // Get multiple posts
-    async appointments(): Promise<Appointment[]> {
-        const appointments = await this.prisma.appointment.findMany({
-            include: {
-                user: true, // Return all fields
-            },
-        });
-        return appointments;
     }
 
     //get list appointment by user
@@ -98,11 +88,11 @@ export class AppointmentsService {
         const today = new Date();
         const userExist = await this.prisma.user.findUnique({
             where: {
-                id: parseInt(input.user),
+                id: input.user,
             },
         });
 
-        if (!userExist) throw new UserNotFoundException(parseInt(input.user));
+        if (!userExist) throw new UserNotFoundException(input.user);
 
         if (Date.parse(input.start_date) < today.valueOf()) {
             throw new HttpException(
@@ -138,7 +128,7 @@ export class AppointmentsService {
     }
 
     // Update an appointment
-    async updateAppt(id: string, params: updateApptDTO): Promise<Appointment> {
+    async updateAppt(id: number, params: updateApptDTO): Promise<Appointment> {
         const { start_date, end_date } = params;
         const today = new Date();
 
@@ -159,7 +149,7 @@ export class AppointmentsService {
         try {
             const updateAppt = await this.prisma.appointment.update({
                 where: {
-                    id: parseInt(id),
+                    id: id,
                 },
                 data: {
                     ...(start_date && { start_date }),
@@ -176,18 +166,18 @@ export class AppointmentsService {
                 error instanceof PrismaClientKnownRequestError &&
                 error.code === PrismaError.RecordDoesNotExist
             ) {
-                throw new ApptNotFoundException(parseInt(id));
+                throw new ApptNotFoundException(id);
             }
             throw error;
         }
     }
 
     // delete an appointment
-    async deleteAppt(id: string): Promise<Appointment> {
+    async deleteAppt(id: number): Promise<Appointment> {
         try {
             const deleteAppt = await this.prisma.appointment.delete({
                 where: {
-                    id: parseInt(id),
+                    id: id,
                 },
                 include: {
                     user: true, // Return all fields
@@ -199,7 +189,7 @@ export class AppointmentsService {
                 error instanceof PrismaClientKnownRequestError &&
                 error.code === PrismaError.RecordDoesNotExist
             ) {
-                throw new ApptNotFoundException(parseInt(id));
+                throw new ApptNotFoundException(id);
             }
             throw error;
         }

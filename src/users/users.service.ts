@@ -9,7 +9,7 @@ import { PrismaError } from '../utils/prismaError';
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) { }
+    constructor(private prisma: PrismaService) {}
 
     // Create a new
     async createUser(input: createUserDTO): Promise<User> {
@@ -35,39 +35,39 @@ export class UsersService {
     }
 
     // Get a single user
-    async user(id: string): Promise<User | null> {
+    async user(id: number): Promise<User> {
         const user = await this.prisma.user.findUnique({
             where: {
-                id: parseInt(id),
+                id: id,
             },
             include: {
                 appointments: true,
             },
         });
 
-        if (!user) throw new UserNotFoundException(parseInt(id));
+        if (!user) throw new UserNotFoundException(id);
 
         return user;
     }
 
     // Get multiple users
-    async users(): Promise<User[] | null> {
+    async users(): Promise<User[]> {
         const users = await this.prisma.user.findMany({
             include: {
                 appointments: true,
             },
         });
-        return users
+        return users;
     }
 
     // Update a user
-    async updateUser(id: string, params: updateUserDTO): Promise<User> {
+    async updateUser(id: number, params: updateUserDTO): Promise<User> {
         const { first_name, last_name, birthdate, role } = params;
 
         try {
             const updateUser = await this.prisma.user.update({
                 where: {
-                    id: parseInt(id),
+                    id: id,
                 },
                 data: {
                     ...(first_name && { first_name }),
@@ -86,34 +86,34 @@ export class UsersService {
                 error instanceof PrismaClientKnownRequestError &&
                 error.code === PrismaError.RecordDoesNotExist
             ) {
-                throw new UserNotFoundException(parseInt(id));
+                throw new UserNotFoundException(id);
             }
             throw error;
         }
     }
 
     // delete an user
-    async deleteUser(id: string): Promise<User> {
+    async deleteUser(id: number): Promise<User> {
         const user = await this.prisma.user.findUnique({
             where: {
-                id: parseInt(id),
+                id: id,
             },
             include: {
                 appointments: true,
             },
         });
 
-        if (!user) throw new UserNotFoundException(parseInt(id));
+        if (!user) throw new UserNotFoundException(id);
 
         const deleteUser = this.prisma.user.delete({
             where: {
-                id: parseInt(id),
+                id: id,
             },
         });
 
         const deleteAppts = this.prisma.appointment.deleteMany({
             where: {
-                userId: parseInt(id),
+                userId: id,
             },
         });
 

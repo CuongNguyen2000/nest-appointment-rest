@@ -1,11 +1,11 @@
 import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger';
 
 export class createApptDTO {
     @ApiProperty()
     @IsString()
     @IsNotEmpty()
-    readonly user: string;
+    readonly user: number;
 
     @ApiProperty()
     @IsString()

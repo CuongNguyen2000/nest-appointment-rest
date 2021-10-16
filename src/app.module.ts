@@ -7,17 +7,17 @@ import { AppointmentsModule } from './appointments/appointments.module';
 import { LoggerModule } from './logger/logger.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      load: [configuration],
-    }),
-    PrismaModule,
-    UsersModule,
-    AppointmentsModule,
-    LoggerModule,
-  ],
-  controllers: [],
-  providers: [],
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+            load: [configuration],
+        }),
+        PrismaModule,
+        UsersModule,
+        AppointmentsModule,
+        LoggerModule,
+    ],
+    controllers: [],
+    providers: [],
 })
 export class AppModule {}
