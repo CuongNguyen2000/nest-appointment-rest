@@ -129,7 +129,7 @@ export class AppointmentsService {
 
     // Update an appointment
     async updateAppt(id: number, params: updateApptDTO): Promise<Appointment> {
-        const { start_date, end_date } = params;
+        const { name, start_date, end_date } = params;
         const today = new Date();
 
         if (Date.parse(start_date) < today.valueOf()) {
@@ -152,6 +152,7 @@ export class AppointmentsService {
                     id: id,
                 },
                 data: {
+                    ...(name && { name }),
                     ...(start_date && { start_date }),
                     ...(end_date && { end_date }),
                 },

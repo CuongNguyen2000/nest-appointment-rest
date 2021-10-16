@@ -21,15 +21,13 @@ export class UsersController {
     @Get()
     @ApiResponse({ status: 200, description: 'OK' })
     async findAllUsers() {
-        const users = await this.userService.users();
-        return users;
+        return this.userService.users();
     }
 
     @Get(':id')
     @ApiResponse({ status: 200, description: 'OK' })
     async findOneUser(@Param('id', ParseIntPipe) id: number) {
-        const user = await this.userService.user(id);
-        return user;
+        return this.userService.user(id);
     }
 
     @Post('createUser')
@@ -38,8 +36,7 @@ export class UsersController {
         description: 'The record has been successfully created.',
     })
     async createOneUser(@Body() input: createUserDTO) {
-        const newUser = await this.userService.createUser(input);
-        return newUser;
+        return this.userService.createUser(input);
     }
 
     @Patch('updateUser/:id')
@@ -48,14 +45,12 @@ export class UsersController {
         @Param('id', ParseIntPipe) id: number,
         @Body() input: updateUserDTO,
     ) {
-        const userUpdated = await this.userService.updateUser(id, input);
-        return userUpdated;
+        return this.userService.updateUser(id, input);
     }
 
     @Delete('deleteUser/:id')
     @ApiResponse({ status: 200, description: 'Delete Success' })
     async deleteOneUser(@Param('id', ParseIntPipe) id: number) {
-        const userDeleted = await this.userService.deleteUser(id);
-        return userDeleted;
+        return this.userService.deleteUser(id);
     }
 }

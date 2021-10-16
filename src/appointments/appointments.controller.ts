@@ -22,20 +22,17 @@ export class AppointmentsController {
     @Get(':id')
     @ApiResponse({ status: 200, description: 'OK' })
     async findOneAppt(@Param('id', ParseIntPipe) id: number) {
-        const appt = await this.apptService.appointment(id);
-        return appt;
+        return this.apptService.appointment(id);
     }
 
     @Post('apptsByUser')
     async findApptsByUser(@Body() filter: getApptsDTO) {
-        const appts = await this.apptService.appointmentsByUser(filter);
-        return appts;
+        return this.apptService.appointmentsByUser(filter);
     }
 
     @Post('createAppt')
     async createOneAppt(@Body() input: createApptDTO) {
-        const newAppt = await this.apptService.createAppt(input);
-        return newAppt;
+        return this.apptService.createAppt(input);
     }
 
     @Patch('updateAppt/:id')
@@ -43,14 +40,12 @@ export class AppointmentsController {
         @Param('id', ParseIntPipe) id: number,
         @Body() input: updateApptDTO,
     ) {
-        const apptUpdated = await this.apptService.updateAppt(id, input);
-        return apptUpdated;
+        return this.apptService.updateAppt(id, input);
     }
 
     @Delete('deleteAppt/:id')
     @ApiResponse({ status: 200, description: 'Delete Success' })
     async deleteOneAppt(@Param('id', ParseIntPipe) id: number) {
-        const apptDeleted = await this.apptService.deleteAppt(id);
-        return apptDeleted;
+        return this.apptService.deleteAppt(id);
     }
 }
