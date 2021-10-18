@@ -11,7 +11,13 @@ import {
 import { UsersService } from './users.service';
 import { createUserDTO } from './dto/createUser.dto';
 import { updateUserDTO } from './dto/updateUser.dto';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { getUsersDTO } from './dto/users.dto';
+import {
+    ApiCreatedResponse,
+    ApiOkResponse,
+    ApiResponse,
+    ApiTags,
+} from '@nestjs/swagger';
 
 @Controller('users')
 @ApiTags('Users')
@@ -19,20 +25,20 @@ export class UsersController {
     constructor(private readonly userService: UsersService) {}
 
     @Get()
-    @ApiResponse({ status: 200, description: 'OK' })
+    @ApiOkResponse({ type: getUsersDTO, isArray: true })
     async findAllUsers() {
         return this.userService.users();
     }
 
     @Get(':id')
-    @ApiResponse({ status: 200, description: 'OK' })
+    @ApiOkResponse({ type: getUsersDTO })
     async findOneUser(@Param('id', ParseIntPipe) id: number) {
         return this.userService.user(id);
     }
 
     @Post('createUser')
-    @ApiResponse({
-        status: 201,
+    @ApiCreatedResponse({
+        type: createUserDTO,
         description: 'The record has been successfully created.',
     })
     async createOneUser(@Body() input: createUserDTO) {
@@ -40,7 +46,11 @@ export class UsersController {
     }
 
     @Patch('updateUser/:id')
-    @ApiResponse({ status: 200, description: 'OK' })
+    // @ApiResponse({ status: 200, description: 'OK' })
+    @ApiOkResponse({
+        type: updateUserDTO,
+        description: 'The record has been successfully update',
+    })
     async updateOneUser(
         @Param('id', ParseIntPipe) id: number,
         @Body() input: updateUserDTO,
@@ -49,7 +59,7 @@ export class UsersController {
     }
 
     @Delete('deleteUser/:id')
-    @ApiResponse({ status: 200, description: 'Delete Success' })
+    @ApiResponse({ status: 204, description: 'Delete Success' })
     async deleteOneUser(@Param('id', ParseIntPipe) id: number) {
         return this.userService.deleteUser(id);
     }

@@ -18,7 +18,7 @@ export class createUserDTO {
     @IsEmail()
     @IsString()
     @IsNotEmpty()
-    readonly email: string;
+    email: string;
 
     @ApiProperty({
         example: 'Cuong',
@@ -28,7 +28,7 @@ export class createUserDTO {
     @IsString()
     @IsNotEmpty()
     @MaxLength(50)
-    readonly first_name: string;
+    firstName: string;
 
     @ApiProperty({
         example: 'Nguyen',
@@ -38,7 +38,7 @@ export class createUserDTO {
     @IsString()
     @IsNotEmpty()
     @MaxLength(50)
-    readonly last_name: string;
+    lastName: string;
 
     @IsOptional()
     @ApiProperty({
@@ -48,9 +48,9 @@ export class createUserDTO {
         nullable: true,
     })
     @IsString()
-    readonly birthdate: string;
+    birthdate: string;
 
     @ApiProperty({ enum: ['DOCTOR', 'THERAPY', 'CARE_MANAGER'] })
     @IsEnum(Role)
-    readonly role: Role;
+    role: Role;
 }

@@ -25,24 +25,13 @@ export class UsersService {
                 HttpStatus.BAD_REQUEST,
             );
 
-        const newUser = await this.prisma.user.create({
-            data: input,
-            include: {
-                appointments: true,
-            },
-        });
-        return newUser;
+        return this.prisma.user.create({ data: input });
     }
 
     // Get a single user
     async user(id: number): Promise<User> {
         const user = await this.prisma.user.findUnique({
-            where: {
-                id: id,
-            },
-            include: {
-                appointments: true,
-            },
+            where: { id },
         });
 
         if (!user) throw new UserNotFoundException(id);
@@ -52,35 +41,23 @@ export class UsersService {
 
     // Get multiple users
     async users(): Promise<User[]> {
-        const users = await this.prisma.user.findMany({
-            include: {
-                appointments: true,
-            },
-        });
-        return users;
+        return this.prisma.user.findMany();
     }
 
     // Update a user
     async updateUser(id: number, params: updateUserDTO): Promise<User> {
-        const { first_name, last_name, birthdate, role } = params;
+        const { firstName, lastName, birthdate, role } = params;
 
         try {
-            const updateUser = await this.prisma.user.update({
-                where: {
-                    id: id,
-                },
+            return this.prisma.user.update({
+                where: { id },
                 data: {
-                    ...(first_name && { first_name }),
-                    ...(last_name && { last_name }),
+                    ...(firstName && { firstName }),
+                    ...(lastName && { lastName }),
                     ...(birthdate && { birthdate }),
                     ...(role && { role }),
                 },
-                include: {
-                    appointments: true, // Return all fields
-                },
             });
-
-            return updateUser;
         } catch (error) {
             if (
                 error instanceof PrismaClientKnownRequestError &&
@@ -95,20 +72,13 @@ export class UsersService {
     // delete an user
     async deleteUser(id: number): Promise<User> {
         const user = await this.prisma.user.findUnique({
-            where: {
-                id: id,
-            },
-            include: {
-                appointments: true,
-            },
+            where: { id },
         });
 
         if (!user) throw new UserNotFoundException(id);
 
         const deleteUser = this.prisma.user.delete({
-            where: {
-                id: id,
-            },
+            where: { id },
         });
 
         const deleteAppts = this.prisma.appointment.deleteMany({
