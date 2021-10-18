@@ -9,7 +9,7 @@ import { PrismaError } from '../utils/prismaError';
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService) { }
 
     // Create a new
     async createUser(input: createUserDTO): Promise<User> {
@@ -46,17 +46,11 @@ export class UsersService {
 
     // Update a user
     async updateUser(id: number, params: updateUserDTO): Promise<User> {
-        const { firstName, lastName, birthdate, role } = params;
 
         try {
-            return this.prisma.user.update({
+            return await this.prisma.user.update({
                 where: { id },
-                data: {
-                    ...(firstName && { firstName }),
-                    ...(lastName && { lastName }),
-                    ...(birthdate && { birthdate }),
-                    ...(role && { role }),
-                },
+                data: { ...params },
             });
         } catch (error) {
             if (
@@ -77,18 +71,8 @@ export class UsersService {
 
         if (!user) throw new UserNotFoundException(id);
 
-        const deleteUser = this.prisma.user.delete({
+        return this.prisma.user.delete({
             where: { id },
         });
-
-        const deleteAppts = this.prisma.appointment.deleteMany({
-            where: {
-                userId: id,
-            },
-        });
-
-        await this.prisma.$transaction([deleteAppts, deleteUser]);
-
-        return user;
     }
 }
