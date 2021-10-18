@@ -1,17 +1,31 @@
-import { IsString, MaxLength } from 'class-validator';
+import { IsString, MaxLength, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class updateApptDTO {
-    @ApiProperty()
+    @ApiProperty({ description: 'Name of appointment', example: 'Brace' })
     @IsString()
+    @IsNotEmpty()
     @MaxLength(50)
     name: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Appointment start date',
+        example: '2021-11-23T00:00:00.000Z',
+    })
     @IsString()
-    start_date: string;
+    @IsNotEmpty()
+    startDate: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Appointment end date',
+        example: '2021-11-23T00:00:00.000Z',
+    })
     @IsString()
-    end_date: string;
+    @IsNotEmpty()
+    endDate: string;
+
+    @ApiProperty({ description: 'time zone string', example: 'Asia/Saigon' })
+    @IsString()
+    @IsNotEmpty()
+    timeZone: string;
 }

@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 
 export class UserEntity{
 
@@ -52,6 +52,7 @@ export class UserEntity{
     @IsString()
     birthdate: Date;
 
+    @Transform(({ value }) => value.name)
     @ApiProperty({ enum: ['DOCTOR', 'THERAPY', 'CARE_MANAGER'] })
     @IsEnum(Role)
     role: Role;

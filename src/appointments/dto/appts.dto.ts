@@ -1,20 +1,22 @@
-import { IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNumber } from 'class-validator';
+import {PartialType, ApiProperty } from '@nestjs/swagger';
 
 export class getApptsDTO {
     @ApiProperty()
-    @IsString()
-    user: string;
+    @IsNumber()
+    user: number;
 
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Appointment start date',
+        example: '2021-11-23T00:00:00.000Z',
+    })
     @IsString()
-    name: string;
+    timeFrom: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Appointment start date',
+        example: '2021-11-23T00:00:00.000Z',
+    })
     @IsString()
-    start_date: string;
-
-    @ApiProperty()
-    @IsString()
-    end_date: string;
+    timeTo: string;
 }

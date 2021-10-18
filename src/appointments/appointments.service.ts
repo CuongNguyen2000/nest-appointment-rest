@@ -18,12 +18,7 @@ export class AppointmentsService {
     // Get a single appointment
     async appointment(id: number): Promise<Appointment> {
         const appt = await this.prisma.appointment.findUnique({
-            where: {
-                id: id,
-            },
-            include: {
-                user: true, // Return all fields
-            },
+            where: { id },
         });
 
         if (!appt) throw new ApptNotFoundException(id);
@@ -36,51 +31,42 @@ export class AppointmentsService {
         const today = new Date();
         const userExist = await this.prisma.user.findUnique({
             where: {
-                id: parseInt(filter.user),
+                id: filter.user,
             },
         });
 
-        if (!userExist) throw new UserNotFoundException(parseInt(filter.user));
+        if (!userExist) throw new UserNotFoundException(filter.user);
 
-        const startDate = new Date(Date.parse(filter.start_date));
-        const endDate = new Date(Date.parse(filter.end_date));
+        const startDate = new Date(Date.parse(filter.timeFrom));
+        const endDate = new Date(Date.parse(filter.timeTo));
 
-        if (Date.parse(filter.start_date) < today.valueOf()) {
+        if (Date.parse(filter.timeFrom) < today.valueOf()) {
             throw new HttpException(
                 'Start date must be greater than today',
                 HttpStatus.BAD_REQUEST,
             );
         }
 
-        if (Date.parse(filter.start_date) > Date.parse(filter.end_date)) {
+        if (Date.parse(filter.timeFrom) > Date.parse(filter.timeTo)) {
             throw new HttpException(
                 'End date must be greater than start date',
                 HttpStatus.BAD_REQUEST,
             );
         }
 
-        const appointments = await this.prisma.appointment.findMany({
+        return this.prisma.appointment.findMany({
             where: {
                 AND: [
-                    { userId: parseInt(filter.user) },
+                    { userId: filter.user },
                     {
-                        start_date: {
+                        startDate: {
                             gte: startDate,
+                            lte: endDate
                         },
-                    },
-                    {
-                        end_date: {
-                            lte: endDate,
-                        },
-                    },
+                    }
                 ],
             },
-            include: {
-                user: true, // Return all fields
-            },
         });
-
-        return appointments;
     }
 
     // Create an appointment
@@ -94,52 +80,50 @@ export class AppointmentsService {
 
         if (!userExist) throw new UserNotFoundException(input.user);
 
-        if (Date.parse(input.start_date) < today.valueOf()) {
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        if (Date.parse(input.startDate) < today.valueOf()) {
             throw new HttpException(
                 'Start date must be greater than today',
                 HttpStatus.BAD_REQUEST,
             );
         }
 
-        if (Date.parse(input.start_date) > Date.parse(input.end_date)) {
+        if (Date.parse(input.startDate) > Date.parse(input.endDate)) {
             throw new HttpException(
                 'End date must be greater than start date',
                 HttpStatus.BAD_REQUEST,
             );
         }
 
-        console.log(Date.parse(input.start_date));
-        console.log(Date.parse(input.end_date));
-
-        const newAppt = await this.prisma.appointment.create({
+        return this.prisma.appointment.create({
             data: {
-                ...input,
+                name: input.name,
+                startDate: input.startDate,
+                endDate: input.endDate,
+                timeZone: timeZone,
                 user: {
                     connect: {
                         id: userExist.id,
                     },
                 },
             },
-            include: {
-                user: true, // Return all fields
-            },
         });
-        return newAppt;
     }
 
     // Update an appointment
     async updateAppt(id: number, params: updateApptDTO): Promise<Appointment> {
-        const { name, start_date, end_date } = params;
+        const { startDate, endDate } = params;
         const today = new Date();
 
-        if (Date.parse(start_date) < today.valueOf()) {
+        if (Date.parse(startDate) < today.valueOf()) {
             throw new HttpException(
                 'Start date must be greater than today',
                 HttpStatus.BAD_REQUEST,
             );
         }
 
-        if (Date.parse(start_date) > Date.parse(end_date)) {
+        if (Date.parse(startDate) > Date.parse(endDate)) {
             throw new HttpException(
                 'End date must be greater than start date',
                 HttpStatus.BAD_REQUEST,
@@ -147,21 +131,10 @@ export class AppointmentsService {
         }
 
         try {
-            const updateAppt = await this.prisma.appointment.update({
-                where: {
-                    id: id,
-                },
-                data: {
-                    ...(name && { name }),
-                    ...(start_date && { start_date }),
-                    ...(end_date && { end_date }),
-                },
-                include: {
-                    user: true, // Return all fields
-                },
+            return await this.prisma.appointment.update({
+                where: { id },
+                data: { ...params },
             });
-
-            return updateAppt;
         } catch (error) {
             if (
                 error instanceof PrismaClientKnownRequestError &&
@@ -178,10 +151,7 @@ export class AppointmentsService {
         try {
             const deleteAppt = await this.prisma.appointment.delete({
                 where: {
-                    id: id,
-                },
-                include: {
-                    user: true, // Return all fields
+                    id,
                 },
             });
             return deleteAppt;

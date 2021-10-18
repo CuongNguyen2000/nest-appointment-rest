@@ -1,25 +1,52 @@
-import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsString, IsNotEmpty, MaxLength, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class createApptDTO {
     @ApiProperty()
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    readonly user: number;
+    user: number;
 
-    @ApiProperty()
+    @ApiProperty({ description: 'Name of appointment', example: 'Brace' })
     @IsString()
     @IsNotEmpty()
     @MaxLength(50)
-    readonly name: string;
+    name: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Appointment start date',
+        example: '2021-11-23T00:00:00.000Z',
+    })
     @IsString()
     @IsNotEmpty()
-    readonly start_date: string;
+    startDate: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        description: 'Appointment end date',
+        example: '2021-11-23T00:00:00.000Z',
+    })
     @IsString()
     @IsNotEmpty()
-    readonly end_date: string;
+    endDate: string;
+
+    @ApiProperty({ description: 'time zone string', example: 'Asia/Saigon' })
+    @IsString()
+    @IsNotEmpty()
+    timeZone: string;
+
+    validate(): string[] {
+        const errors = [];
+
+        const startDate = Date.parse(this.startDate);
+
+        const endDate = Date.parse(this.endDate);
+
+        console.log('hhhhh');
+
+        if (startDate > endDate) {
+            errors.push("'end' cannot be earlier than 'start'");
+        }
+
+        return errors;
+    }
 }
