@@ -11,24 +11,31 @@ generator client {
 }
 
 model Appointment {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(50)
-  start_date DateTime
-  end_date   DateTime
-  user       User     @relation(fields: [userId], references: [id])
-  userId     Int
-  createdAt  DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(50)
+  startDate DateTime @db.Timestamptz
+  endDate   DateTime @db.Timestamptz
+  timeZone  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  @@map("appointments")
 }
 
 model User {
   id           Int           @id @default(autoincrement())
   role         Role          @default(DOCTOR)
   email        String        @unique
-  first_name   String        @db.VarChar(50)
-  last_name    String        @db.VarChar(50)
+  firstName    String        @db.VarChar(50)
+  lastName     String        @db.VarChar(50)
   birthdate    DateTime?
   appointments Appointment[]
-  createdAt    DateTime      @default(now())
+  createdAt    DateTime      @default(now()) @db.Timestamptz
+  updatedAt    DateTime      @updatedAt @db.Timestamptz
+
+  @@map("users")
 }
 
 enum Role {
