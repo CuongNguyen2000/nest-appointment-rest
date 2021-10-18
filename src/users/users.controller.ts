@@ -1,5 +1,6 @@
 import {
     Body,
+    ClassSerializerInterceptor,
     Controller,
     Delete,
     Get,
@@ -7,11 +8,13 @@ import {
     ParseIntPipe,
     Patch,
     Post,
+    UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { createUserDTO } from './dto/createUser.dto';
 import { updateUserDTO } from './dto/updateUser.dto';
-import { getUsersDTO } from './dto/users.dto';
+import { UpdateUserEntity } from './entities/updateUser.entity'
+import { UserEntity } from './entities/user.entity';
 import {
     ApiCreatedResponse,
     ApiOkResponse,
@@ -25,15 +28,16 @@ export class UsersController {
     constructor(private readonly userService: UsersService) {}
 
     @Get()
-    @ApiOkResponse({ type: getUsersDTO, isArray: true })
+    @ApiOkResponse({ type: UserEntity, isArray: true })
     async findAllUsers() {
         return this.userService.users();
     }
 
+    @UseInterceptors(ClassSerializerInterceptor)
     @Get(':id')
-    @ApiOkResponse({ type: getUsersDTO })
+    @ApiOkResponse({ type: UserEntity })
     async findOneUser(@Param('id', ParseIntPipe) id: number) {
-        return this.userService.user(id);
+        return new UserEntity(await this.userService.user(id));
     }
 
     @Post('createUser')
@@ -45,17 +49,17 @@ export class UsersController {
         return this.userService.createUser(input);
     }
 
+    @UseInterceptors(ClassSerializerInterceptor)
     @Patch('updateUser/:id')
-    // @ApiResponse({ status: 200, description: 'OK' })
     @ApiOkResponse({
-        type: updateUserDTO,
+        type: UpdateUserEntity,
         description: 'The record has been successfully update',
     })
     async updateOneUser(
         @Param('id', ParseIntPipe) id: number,
         @Body() input: updateUserDTO,
     ) {
-        return this.userService.updateUser(id, input);
+        return new UpdateUserEntity(await this.userService.updateUser(id, input));
     }
 
     @Delete('deleteUser/:id')
