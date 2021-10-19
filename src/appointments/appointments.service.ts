@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Appointment } from '@prisma/client';
 import { createApptDTO } from './dto/createAppt.dto';
@@ -83,17 +83,11 @@ export class AppointmentsService {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
         if (Date.parse(input.startDate) < today.valueOf()) {
-            throw new HttpException(
-                'Start date must be greater than today',
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new BadRequestException('Start date must be greater than today')
         }
 
         if (Date.parse(input.startDate) > Date.parse(input.endDate)) {
-            throw new HttpException(
-                'End date must be greater than start date',
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new BadRequestException('End date must be greater than start date')
         }
 
         return this.prisma.appointment.create({
