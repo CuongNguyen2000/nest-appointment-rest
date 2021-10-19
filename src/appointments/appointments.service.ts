@@ -111,17 +111,11 @@ export class AppointmentsService {
         const today = new Date();
 
         if (Date.parse(startDate) < today.valueOf()) {
-            throw new HttpException(
-                'Start date must be greater than today',
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new BadRequestException('Start date must be greater than today')
         }
 
         if (Date.parse(startDate) > Date.parse(endDate)) {
-            throw new HttpException(
-                'End date must be greater than start date',
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new BadRequestException('End date must be greater than start date')
         }
 
         try {
