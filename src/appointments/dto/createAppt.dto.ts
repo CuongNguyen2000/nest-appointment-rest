@@ -29,7 +29,7 @@ export class createApptDTO {
     @IsNotEmpty()
     endDate: string;
 
-    @ApiProperty({ description: 'time zone string', example: 'Asia/Saigon' })
+    // @ApiProperty({ description: 'time zone string', example: 'Asia/Saigon' })
     @IsString()
     @IsNotEmpty()
     timeZone: string;
