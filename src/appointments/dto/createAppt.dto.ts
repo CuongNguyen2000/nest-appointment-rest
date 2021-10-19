@@ -36,15 +36,19 @@ export class createApptDTO {
 
     validate(): string[] {
         const errors = [];
+        const today = new Date();
 
         const startDate = Date.parse(this.startDate);
-
         const endDate = Date.parse(this.endDate);
 
         console.log('hhhhh');
 
+        if (startDate < today.valueOf()) {
+            errors.push("Start date must be greater than today");
+        }
+
         if (startDate > endDate) {
-            errors.push("'end' cannot be earlier than 'start'");
+            errors.push("End date must be greater than start date");
         }
 
         return errors;
