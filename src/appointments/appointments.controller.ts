@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     ClassSerializerInterceptor,
     Controller,
@@ -25,7 +26,7 @@ import {
 @Controller('appointments')
 @ApiTags('Appointments')
 export class AppointmentsController {
-    constructor(private readonly apptService: AppointmentsService) {}
+    constructor(private readonly apptService: AppointmentsService) { }
 
     @Get(':id')
     @ApiOkResponse({ type: getApptsDTO, description: 'OK' })
@@ -45,6 +46,13 @@ export class AppointmentsController {
         description: 'The record has been successfully created.',
     })
     async createOneAppt(@Body() input: createApptDTO) {
+        console.log(typeof input.validate());
+
+        // const errors = input.validate();
+        // if (errors.length > 0) {
+        //     throw new BadRequestException(errors)
+        // }
+
         return this.apptService.createAppt(input);
     }
 

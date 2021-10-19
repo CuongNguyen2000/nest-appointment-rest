@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { createUserDTO } from './dto/createUser.dto';
@@ -9,7 +9,8 @@ import { PrismaError } from '../utils/prismaError';
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService) { }
+    private readonly logger = new Logger(UsersService.name);
 
     // Create a new
     async createUser(input: createUserDTO): Promise<User> {
@@ -19,12 +20,14 @@ export class UsersService {
             },
         });
 
-        if (user)
+        if (user){
+            this.logger.warn('Tried to create an user that already exists');
             throw new HttpException(
                 'User is already exist',
                 HttpStatus.BAD_REQUEST,
             );
-
+        }
+            
         return this.prisma.user.create({ data: input });
     }
 
@@ -34,7 +37,10 @@ export class UsersService {
             where: { id },
         });
 
-        if (!user) throw new UserNotFoundException(id);
+        if (!user) {
+            this.logger.warn('Tried to access a user that does not exist');
+            throw new UserNotFoundException(id);
+        }
 
         return user;
     }
@@ -56,6 +62,7 @@ export class UsersService {
                 error instanceof PrismaClientKnownRequestError &&
                 error.code === PrismaError.RecordDoesNotExist
             ) {
+                this.logger.warn('Tried to access a user that does not exist');
                 throw new UserNotFoundException(id);
             }
             throw error;
@@ -68,7 +75,10 @@ export class UsersService {
             where: { id },
         });
 
-        if (!user) throw new UserNotFoundException(id);
+        if (!user) {
+            this.logger.warn('Tried to access a user that does not exist');
+            throw new UserNotFoundException(id);
+        }
 
         return this.prisma.user.delete({
             where: { id },

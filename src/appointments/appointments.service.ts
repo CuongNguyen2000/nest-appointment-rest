@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Appointment } from '@prisma/client';
 import { createApptDTO } from './dto/createAppt.dto';
@@ -14,6 +14,7 @@ import { PrismaError } from '../utils/prismaError';
 @Injectable()
 export class AppointmentsService {
     constructor(private prisma: PrismaService) {}
+    private readonly logger = new Logger(AppointmentsService.name);
 
     // Get a single appointment
     async appointment(id: number): Promise<Appointment> {
@@ -21,7 +22,10 @@ export class AppointmentsService {
             where: { id },
         });
 
-        if (!appt) throw new ApptNotFoundException(id);
+        if (!appt) {
+            this.logger.warn('Tried to access an appointment that does not exist');
+            throw new ApptNotFoundException(id);
+        }
 
         return appt;
     }
@@ -35,23 +39,22 @@ export class AppointmentsService {
             },
         });
 
-        if (!userExist) throw new UserNotFoundException(filter.user);
+        if (!userExist) {
+            this.logger.warn('Tried to access an user that does not exist');
+            throw new UserNotFoundException(filter.user);
+        } 
 
         const startDate = new Date(Date.parse(filter.timeFrom));
         const endDate = new Date(Date.parse(filter.timeTo));
 
         if (Date.parse(filter.timeFrom) < today.valueOf()) {
-            throw new HttpException(
-                'Start date must be greater than today',
-                HttpStatus.BAD_REQUEST,
-            );
+            this.logger.warn('Start date must be greater than today');
+            throw new BadRequestException('Start date must be greater than today')
         }
 
         if (Date.parse(filter.timeFrom) > Date.parse(filter.timeTo)) {
-            throw new HttpException(
-                'End date must be greater than start date',
-                HttpStatus.BAD_REQUEST,
-            );
+            this.logger.warn('End date must be greater than start date');
+            throw new BadRequestException('End date must be greater than start date')
         }
 
         return this.prisma.appointment.findMany({
@@ -83,10 +86,12 @@ export class AppointmentsService {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
         if (Date.parse(input.startDate) < today.valueOf()) {
+            this.logger.warn('Start date must be greater than today');
             throw new BadRequestException('Start date must be greater than today')
         }
 
         if (Date.parse(input.startDate) > Date.parse(input.endDate)) {
+            this.logger.warn('End date must be greater than start date');
             throw new BadRequestException('End date must be greater than start date')
         }
 
@@ -111,10 +116,12 @@ export class AppointmentsService {
         const today = new Date();
 
         if (Date.parse(startDate) < today.valueOf()) {
+            this.logger.warn('Start date must be greater than today');
             throw new BadRequestException('Start date must be greater than today')
         }
 
         if (Date.parse(startDate) > Date.parse(endDate)) {
+            this.logger.warn('End date must be greater than start date');
             throw new BadRequestException('End date must be greater than start date')
         }
 
