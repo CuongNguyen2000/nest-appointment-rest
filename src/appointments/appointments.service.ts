@@ -13,7 +13,7 @@ import { PrismaError } from '../utils/prismaError';
 
 @Injectable()
 export class AppointmentsService {
-    constructor(private prisma: PrismaService) { }
+    constructor(private prisma: PrismaService) {}
 
     // Get a single appointment
     async appointment(id: number): Promise<Appointment> {
@@ -61,9 +61,9 @@ export class AppointmentsService {
                     {
                         startDate: {
                             gte: startDate,
-                            lte: endDate
+                            lte: endDate,
                         },
-                    }
+                    },
                 ],
             },
         });
@@ -101,7 +101,7 @@ export class AppointmentsService {
                 name: input.name,
                 startDate: input.startDate,
                 endDate: input.endDate,
-                timeZone: timeZone,
+                timeZone,
                 user: {
                     connect: {
                         id: userExist.id,

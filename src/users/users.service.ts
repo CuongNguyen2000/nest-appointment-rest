@@ -9,7 +9,7 @@ import { PrismaError } from '../utils/prismaError';
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) { }
+    constructor(private prisma: PrismaService) {}
 
     // Create a new
     async createUser(input: createUserDTO): Promise<User> {
@@ -46,7 +46,6 @@ export class UsersService {
 
     // Update a user
     async updateUser(id: number, params: updateUserDTO): Promise<User> {
-
         try {
             return await this.prisma.user.update({
                 where: { id },

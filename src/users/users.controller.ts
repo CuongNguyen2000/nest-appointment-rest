@@ -13,7 +13,7 @@ import {
 import { UsersService } from './users.service';
 import { createUserDTO } from './dto/createUser.dto';
 import { updateUserDTO } from './dto/updateUser.dto';
-import { UpdateUserEntity } from './entities/updateUser.entity'
+import { UpdateUserEntity } from './entities/updateUser.entity';
 import { UserEntity } from './entities/user.entity';
 import {
     ApiCreatedResponse,
@@ -59,7 +59,9 @@ export class UsersController {
         @Param('id', ParseIntPipe) id: number,
         @Body() input: updateUserDTO,
     ) {
-        return new UpdateUserEntity(await this.userService.updateUser(id, input));
+        return new UpdateUserEntity(
+            await this.userService.updateUser(id, input),
+        );
     }
 
     @Delete('deleteUser/:id')

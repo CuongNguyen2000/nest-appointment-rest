@@ -11,7 +11,6 @@ import { Role } from '@prisma/client';
 import { Exclude } from 'class-transformer';
 
 export class UpdateUserEntity {
-
     @ApiProperty({
         example: 'cn1122000@gmail.com',
         description: 'Your email address',

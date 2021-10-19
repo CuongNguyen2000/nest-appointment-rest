@@ -10,8 +10,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { Exclude, Transform } from 'class-transformer';
 
-export class UserEntity{
-
+export class UserEntity {
     @ApiProperty({
         example: 'cn1122000@gmail.com',
         description: 'Your email address',

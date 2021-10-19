@@ -55,7 +55,9 @@ export class AppointmentsController {
         @Param('id', ParseIntPipe) id: number,
         @Body() input: updateApptDTO,
     ) {
-        return new updateAppEntity(await this.apptService.updateAppt(id, input))
+        return new updateAppEntity(
+            await this.apptService.updateAppt(id, input),
+        );
     }
 
     @Delete('deleteAppt/:id')

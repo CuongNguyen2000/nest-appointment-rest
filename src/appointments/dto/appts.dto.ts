@@ -1,5 +1,5 @@
 import { IsString, IsNumber } from 'class-validator';
-import {PartialType, ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class getApptsDTO {
     @ApiProperty()
