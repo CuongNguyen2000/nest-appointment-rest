@@ -4,6 +4,7 @@ import {
     Controller,
     Delete,
     Get,
+    Logger,
     Param,
     ParseIntPipe,
     Patch,
@@ -26,10 +27,12 @@ import {
 @ApiTags('Users')
 export class UsersController {
     constructor(private readonly userService: UsersService) {}
+    private readonly logger = new Logger(UsersController.name);
 
     @Get()
     @ApiOkResponse({ type: UserEntity, isArray: true })
     async findAllUsers() {
+        this.logger.verbose('Retrieving all users.');
         return this.userService.users();
     }
 
@@ -37,6 +40,7 @@ export class UsersController {
     @Get(':id')
     @ApiOkResponse({ type: UserEntity })
     async findOneUser(@Param('id', ParseIntPipe) id: number) {
+        this.logger.verbose(`Retrieving specific user with id: ${id}`);
         return new UserEntity(await this.userService.user(id));
     }
 
@@ -46,6 +50,7 @@ export class UsersController {
         description: 'The record has been successfully created.',
     })
     async createOneUser(@Body() input: createUserDTO) {
+        this.logger.verbose('Create an user.');
         return this.userService.createUser(input);
     }
 
@@ -59,6 +64,7 @@ export class UsersController {
         @Param('id', ParseIntPipe) id: number,
         @Body() input: updateUserDTO,
     ) {
+        this.logger.verbose(`Update an user with id: ${id}`);
         return new UpdateUserEntity(
             await this.userService.updateUser(id, input),
         );
@@ -67,6 +73,7 @@ export class UsersController {
     @Delete('deleteUser/:id')
     @ApiResponse({ status: 204, description: 'Delete Success' })
     async deleteOneUser(@Param('id', ParseIntPipe) id: number) {
+        this.logger.verbose(`Delete an user with id: ${id}`);
         return this.userService.deleteUser(id);
     }
 }

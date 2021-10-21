@@ -5,6 +5,7 @@ import {
     Controller,
     Delete,
     Get,
+    Logger,
     Param,
     ParseIntPipe,
     Patch,
@@ -27,16 +28,19 @@ import {
 @ApiTags('Appointments')
 export class AppointmentsController {
     constructor(private readonly apptService: AppointmentsService) { }
+    private readonly logger = new Logger(AppointmentsController.name);
 
     @Get(':id')
     @ApiOkResponse({ type: getApptsDTO, description: 'OK' })
     async findOneAppt(@Param('id', ParseIntPipe) id: number) {
+        this.logger.verbose(`Retrieving specific appointment with id: ${id}`);
         return this.apptService.appointment(id);
     }
 
     @Post('apptsByUser')
     @ApiOkResponse({ type: createApptDTO, description: 'OK', isArray: true })
     async findApptsByUser(@Body() filter: getApptsDTO) {
+        this.logger.verbose(`Retrieving all appointment by filter: ${JSON.stringify(filter)}`);
         return this.apptService.appointmentsByUser(filter);
     }
 
@@ -46,13 +50,14 @@ export class AppointmentsController {
         description: 'The record has been successfully created.',
     })
     async createOneAppt(@Body() input: createApptDTO) {
-        console.log(typeof input.validate());
+        // console.log(typeof input.validate());
 
         // const errors = input.validate();
         // if (errors.length > 0) {
         //     throw new BadRequestException(errors)
         // }
 
+        this.logger.verbose(`Create an appointment from userId: ${input.user}`);
         return this.apptService.createAppt(input);
     }
 
@@ -63,6 +68,7 @@ export class AppointmentsController {
         @Param('id', ParseIntPipe) id: number,
         @Body() input: updateApptDTO,
     ) {
+        this.logger.verbose(`Update an appointment with id: ${id}`);
         return new updateAppEntity(
             await this.apptService.updateAppt(id, input),
         );
@@ -71,6 +77,7 @@ export class AppointmentsController {
     @Delete('deleteAppt/:id')
     @ApiResponse({ status: 204, description: 'Delete Success' })
     async deleteOneAppt(@Param('id', ParseIntPipe) id: number) {
+        this.logger.verbose(`Delete an appointment with id: ${id}`);
         return this.apptService.deleteAppt(id);
     }
 }
