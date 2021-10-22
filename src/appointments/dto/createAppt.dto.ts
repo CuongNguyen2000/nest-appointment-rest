@@ -2,6 +2,7 @@ import { IsString, IsNotEmpty, MaxLength, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class createApptDTO {
+
     @ApiProperty()
     @IsNumber()
     @IsNotEmpty()
@@ -29,28 +30,9 @@ export class createApptDTO {
     @IsNotEmpty()
     endDate: string;
 
-    // @ApiProperty({ description: 'time zone string', example: 'Asia/Saigon' })
+    @ApiProperty({ description: 'time zone string', example: 'Asia/Saigon' })
     @IsString()
     @IsNotEmpty()
     timeZone: string;
 
-    validate(): string[] {
-        const errors = [];
-        const today = new Date();
-
-        const startDate = Date.parse(this.startDate);
-        const endDate = Date.parse(this.endDate);
-
-        console.log('hhhhh');
-
-        if (startDate < today.valueOf()) {
-            errors.push("Start date must be greater than today");
-        }
-
-        if (startDate > endDate) {
-            errors.push("End date must be greater than start date");
-        }
-
-        return errors;
-    }
 }

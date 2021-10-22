@@ -26,6 +26,7 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { ValidationPipe } from '../shared/validation.pipe';
+import { checkValid } from './dto/checkValid';
 
 @Controller('appointments')
 @ApiTags('Appointments')
@@ -54,12 +55,11 @@ export class AppointmentsController {
         description: 'The record has been successfully created.',
     })
     async createOneAppt(@Body() input: createApptDTO) {
-        // console.log(typeof input.validate());
 
-        // const errors = input.validate();
-        // if (errors.length > 0) {
-        //     throw new BadRequestException(errors)
-        // }
+        const errors = checkValid.validate(input);
+        if (errors.length > 0) {
+            throw new BadRequestException(errors)
+        }
 
         this.logger.verbose(`Create an appointment from userId: ${input.user}`);
         return this.apptService.createAppt(input);
