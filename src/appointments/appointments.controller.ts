@@ -10,7 +10,9 @@ import {
     ParseIntPipe,
     Patch,
     Post,
+    Query,
     UseInterceptors,
+    UsePipes,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { createApptDTO } from './dto/createAppt.dto';
@@ -23,6 +25,7 @@ import {
     ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { ValidationPipe } from '../shared/validation.pipe';
 
 @Controller('appointments')
 @ApiTags('Appointments')
@@ -39,12 +42,13 @@ export class AppointmentsController {
 
     @Post('apptsByUser')
     @ApiOkResponse({ type: createApptDTO, description: 'OK', isArray: true })
-    async findApptsByUser(@Body() filter: getApptsDTO) {
+    async findApptsByUser(@Body('filter', ValidationPipe) filter: getApptsDTO) {
         this.logger.verbose(`Retrieving all appointment by filter: ${JSON.stringify(filter)}`);
         return this.apptService.appointmentsByUser(filter);
     }
 
     @Post('createAppt')
+    @UsePipes(new ValidationPipe())
     @ApiCreatedResponse({
         type: createApptDTO,
         description: 'The record has been successfully created.',
