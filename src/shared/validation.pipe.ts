@@ -40,11 +40,11 @@ export class ValidationPipe implements PipeTransform<any> {
         return true;
     }
 
-    private check(errors: any[], message: string) {
-        errors.map(err => {
-            for (let property in err.constraints) {
-                return err.constraints[property] = message;
-            }
-        })
-    }
+    // private check(errors: any[], message: string) {
+    //     errors.map(err => {
+    //         for (let property in err.constraints) {
+    //             return err.constraints[property] = message;
+    //         }
+    //     })
+    // }
 }
