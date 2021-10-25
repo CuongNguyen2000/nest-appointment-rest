@@ -14,6 +14,8 @@ lerna-debug.log*
 # OS
 .DS_Store
 .env
+jwtRS256.key
+jwtRS256.key.pub
 
 # Tests
 /coverage

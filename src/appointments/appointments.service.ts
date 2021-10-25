@@ -1,4 +1,5 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { LoggerService } from './../logger/logger.service';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Appointment } from '@prisma/client';
 import { createApptDTO } from './dto/createAppt.dto';
@@ -14,7 +15,9 @@ import { PrismaError } from '../utils/prismaError';
 @Injectable()
 export class AppointmentsService {
     constructor(private prisma: PrismaService) {}
-    private readonly logger = new Logger(AppointmentsService.name);
+    private readonly logger: LoggerService = new Logger(
+        AppointmentsService.name,
+    );
 
     // Get a single appointment
     async appointment(id: number): Promise<Appointment> {
@@ -23,7 +26,9 @@ export class AppointmentsService {
         });
 
         if (!appt) {
-            this.logger.warn('Tried to access an appointment that does not exist');
+            this.logger.warn(
+                'Tried to access an appointment that does not exist',
+            );
             throw new ApptNotFoundException(id);
         }
 
@@ -42,7 +47,7 @@ export class AppointmentsService {
         if (!userExist) {
             this.logger.warn('Tried to access an user that does not exist');
             throw new UserNotFoundException(filter.user);
-        } 
+        }
 
         const startDate = new Date(Date.parse(filter.timeFrom));
         const endDate = new Date(Date.parse(filter.timeTo));
@@ -71,10 +76,10 @@ export class AppointmentsService {
             },
         });
 
-        if (!userExist){
+        if (!userExist) {
             this.logger.warn('Tried to access an user that does not exist');
             throw new UserNotFoundException(input.user);
-        } 
+        }
 
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -95,7 +100,6 @@ export class AppointmentsService {
 
     // Update an appointment
     async updateAppt(id: number, params: updateApptDTO): Promise<Appointment> {
-
         try {
             return await this.prisma.appointment.update({
                 where: { id },

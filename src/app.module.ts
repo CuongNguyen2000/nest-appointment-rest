@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { LoggerModule } from './logger/logger.module';
+import { AuthModule } from './auth/auth.module';
 import LogsMiddleware from './utils/logs.middleware';
 
 @Module({
@@ -17,14 +18,13 @@ import LogsMiddleware from './utils/logs.middleware';
         UsersModule,
         AppointmentsModule,
         LoggerModule,
+        AuthModule,
     ],
     controllers: [],
     providers: [],
 })
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer
-            .apply(LogsMiddleware)
-            .forRoutes('*');
+        consumer.apply(LogsMiddleware).forRoutes('*');
     }
 }

@@ -1,3 +1,4 @@
+import { LoggerService } from './../logger/logger.service';
 import {
     Body,
     ClassSerializerInterceptor,
@@ -27,7 +28,7 @@ import {
 @ApiTags('Users')
 export class UsersController {
     constructor(private readonly userService: UsersService) {}
-    private readonly logger = new Logger(UsersController.name);
+    private readonly logger: LoggerService = new Logger(UsersController.name);
 
     @Get()
     @ApiOkResponse({ type: UserEntity, isArray: true })

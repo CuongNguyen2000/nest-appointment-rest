@@ -2,7 +2,6 @@ import { IsString, IsNotEmpty, MaxLength, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class createApptDTO {
-
     @ApiProperty()
     @IsNumber()
     @IsNotEmpty()
@@ -34,5 +33,4 @@ export class createApptDTO {
     @IsString()
     @IsNotEmpty()
     timeZone: string;
-
 }

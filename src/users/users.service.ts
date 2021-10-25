@@ -1,4 +1,5 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { LoggerService } from './../logger/logger.service';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { createUserDTO } from './dto/createUser.dto';
@@ -9,8 +10,8 @@ import { PrismaError } from '../utils/prismaError';
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) { }
-    private readonly logger = new Logger(UsersService.name);
+    constructor(private prisma: PrismaService) {}
+    private readonly logger: LoggerService = new Logger(UsersService.name);
 
     // Create a new
     async createUser(input: createUserDTO): Promise<User> {
@@ -20,14 +21,11 @@ export class UsersService {
             },
         });
 
-        if (user){
+        if (user) {
             this.logger.warn('Tried to create an user that already exists');
-            throw new HttpException(
-                'User is already exist',
-                HttpStatus.BAD_REQUEST,
-            );
+            throw new BadRequestException('User is already exist');
         }
-            
+
         return this.prisma.user.create({ data: input });
     }
 
