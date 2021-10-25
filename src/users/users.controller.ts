@@ -10,6 +10,7 @@ import {
     ParseIntPipe,
     Patch,
     Post,
+    UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -18,18 +19,22 @@ import { updateUserDTO } from './dto/updateUser.dto';
 import { UpdateUserEntity } from './entities/updateUser.entity';
 import { UserEntity } from './entities/user.entity';
 import {
+    ApiBearerAuth,
     ApiCreatedResponse,
     ApiOkResponse,
     ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/strategy/jwt-auth.guard';
 
+@ApiBearerAuth()
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
     constructor(private readonly userService: UsersService) {}
     private readonly logger: LoggerService = new Logger(UsersController.name);
 
+    @UseGuards(JwtAuthGuard)
     @Get()
     @ApiOkResponse({ type: UserEntity, isArray: true })
     async findAllUsers() {
@@ -37,6 +42,7 @@ export class UsersController {
         return this.userService.users();
     }
 
+    @UseGuards(JwtAuthGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     @Get(':id')
     @ApiOkResponse({ type: UserEntity })
@@ -45,6 +51,7 @@ export class UsersController {
         return new UserEntity(await this.userService.user(id));
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('createUser')
     @ApiCreatedResponse({
         type: createUserDTO,
@@ -55,6 +62,7 @@ export class UsersController {
         return this.userService.createUser(input);
     }
 
+    @UseGuards(JwtAuthGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     @Patch('updateUser/:id')
     @ApiOkResponse({
@@ -71,6 +79,7 @@ export class UsersController {
         );
     }
 
+    @UseGuards(JwtAuthGuard)
     @Delete('deleteUser/:id')
     @ApiResponse({ status: 204, description: 'Delete Success' })
     async deleteOneUser(@Param('id', ParseIntPipe) id: number) {
