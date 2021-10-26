@@ -43,20 +43,20 @@ export class AuthService {
             },
         });
 
-        if (!accDetails)
+        if (!accDetails){
+            this.logger.warn('Tried to access account that does not exist');
             throw new NotFoundException('User with this username does not exist');
+        }
 
         // Check if the given password match with saved password
         const isValid = bcrypt.compareSync(acc.password, accDetails.password);
         // console.log(isValid);
         if (isValid) {
             return {
-                msg: {
+                username: acc.username,
+                access_token: this.jwtService.sign({
                     username: acc.username,
-                    access_token: this.jwtService.sign({
-                        username: acc.username,
-                    }),
-                },
+                }),
             };
         } else {
             throw new UnauthorizedException('Invalid credentials')
