@@ -38,16 +38,6 @@ model User {
   @@map("users")
 }
 
-model Admin {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  password  String
-  createdAt DateTime @default(now()) @db.Timestamptz
-  updatedAt DateTime @updatedAt @db.Timestamptz
-
-  @@map("admin")
-}
-
 enum Role {
   DOCTOR
   THERAPY

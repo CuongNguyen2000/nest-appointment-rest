@@ -5,8 +5,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { LoggerModule } from './logger/logger.module';
-import { AuthModule } from './auth/auth.module';
 import LogsMiddleware from './utils/logs.middleware';
+import { GraphQLModule } from '@nestjs/graphql';
 
 @Module({
     imports: [
@@ -14,17 +14,15 @@ import LogsMiddleware from './utils/logs.middleware';
             isGlobal: true,
             load: [configuration],
         }),
+        GraphQLModule.forRoot({
+            typePaths: ['./**/*.graphql'],
+        }),
         PrismaModule,
+        LoggerModule,
         UsersModule,
         AppointmentsModule,
-        LoggerModule,
-        AuthModule,
     ],
     controllers: [],
     providers: [],
 })
-export class AppModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer.apply(LogsMiddleware).forRoutes('*');
-    }
-}
+export class AppModule {}

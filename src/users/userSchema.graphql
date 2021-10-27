@@ -1,0 +1,46 @@
+type User {
+    id: ID!
+    email: String!
+    firstName: String!
+    lastName: String!
+    birthdate: String!
+    appointments: [Appointment!]!
+    role: EnumUserRole
+    createdAt: String!
+    updatedAt: String!
+}
+
+input NewUser {
+    email: String!
+    firstName: String!
+    lastName: String!
+    birthdate: String
+    role: EnumUserRole
+    appointments: [ID]
+}
+
+input UpdateUser {
+    id: ID!
+    email: String
+    firstName: String
+    lastName: String
+    birthdate: String
+    role: EnumUserRole
+}
+
+enum EnumUserRole {
+    DOCTOR
+    THERAPY
+    CARE_MANAGER
+}
+
+type Query {
+    users: [User!]!
+    user(id: ID!): User
+}
+
+type Mutation {
+    createUser(input: NewUser): User!
+    updateUser(input: UpdateUser): User
+    deleteUser(id: ID!): User
+}

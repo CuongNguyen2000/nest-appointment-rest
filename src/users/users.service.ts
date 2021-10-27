@@ -1,5 +1,10 @@
-import { LoggerService } from './../logger/logger.service';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+    BadRequestException,
+    HttpException,
+    HttpStatus,
+    Injectable,
+    Logger,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { createUserDTO } from './dto/createUser.dto';
@@ -7,6 +12,7 @@ import { updateUserDTO } from './dto/updateUser.dto';
 import { UserNotFoundException } from '../exceptions/NotFound.exception';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaError } from '../utils/prismaError';
+import { LoggerService } from './../logger/logger.service';
 
 @Injectable()
 export class UsersService {
@@ -26,13 +32,21 @@ export class UsersService {
             throw new BadRequestException('User is already exist');
         }
 
-        return this.prisma.user.create({ data: input });
+        return this.prisma.user.create({
+            data: input,
+            include: {
+                appointments: true,
+            },
+        });
     }
 
     // Get a single user
     async user(id: number): Promise<User> {
         const user = await this.prisma.user.findUnique({
             where: { id },
+            include: {
+                appointments: true,
+            },
         });
 
         if (!user) {
@@ -45,7 +59,11 @@ export class UsersService {
 
     // Get multiple users
     async users(): Promise<User[]> {
-        return this.prisma.user.findMany();
+        return this.prisma.user.findMany({
+            include: {
+                appointments: true,
+            },
+        });
     }
 
     // Update a user

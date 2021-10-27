@@ -1,5 +1,4 @@
-import { LoggerService } from './../logger/logger.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Appointment } from '@prisma/client';
 import { createApptDTO } from './dto/createAppt.dto';
@@ -11,6 +10,7 @@ import {
 } from '../exceptions/NotFound.exception';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { PrismaError } from '../utils/prismaError';
+import { LoggerService } from './../logger/logger.service';
 
 @Injectable()
 export class AppointmentsService {
@@ -23,6 +23,9 @@ export class AppointmentsService {
     async appointment(id: number): Promise<Appointment> {
         const appt = await this.prisma.appointment.findUnique({
             where: { id },
+            include: {
+                user: true,
+            },
         });
 
         if (!appt) {
@@ -37,16 +40,15 @@ export class AppointmentsService {
 
     //get list appointment by user
     async appointmentsByUser(filter: getApptsDTO): Promise<Appointment[]> {
-        // const today = new Date();
         const userExist = await this.prisma.user.findUnique({
             where: {
-                id: filter.user,
+                id: parseInt(filter.user),
             },
         });
 
         if (!userExist) {
             this.logger.warn('Tried to access an user that does not exist');
-            throw new UserNotFoundException(filter.user);
+            throw new UserNotFoundException(parseInt(filter.user));
         }
 
         const startDate = new Date(Date.parse(filter.timeFrom));
@@ -55,7 +57,7 @@ export class AppointmentsService {
         return this.prisma.appointment.findMany({
             where: {
                 AND: [
-                    { userId: filter.user },
+                    { userId: parseInt(filter.user) },
                     {
                         startDate: {
                             gte: startDate,
@@ -64,21 +66,24 @@ export class AppointmentsService {
                     },
                 ],
             },
+            include: {
+                user: true, // Return all fields
+            },
         });
     }
 
     // Create an appointment
     async createAppt(input: createApptDTO): Promise<Appointment> {
-        const today = new Date();
+        console.log(typeof input.user)
         const userExist = await this.prisma.user.findUnique({
             where: {
-                id: input.user,
+                id: parseInt(input.user),
             },
         });
 
         if (!userExist) {
             this.logger.warn('Tried to access an user that does not exist');
-            throw new UserNotFoundException(input.user);
+            throw new UserNotFoundException(parseInt(input.user));
         }
 
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -94,6 +99,9 @@ export class AppointmentsService {
                         id: userExist.id,
                     },
                 },
+            },
+            include: {
+                user: true, // Return all fields
             },
         });
     }
