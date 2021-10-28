@@ -10,7 +10,6 @@ type Appointment {
 }
 
 input NewAppt {
-    user: ID!
     name: String!
     startDate: String!
     endDate: String!
@@ -18,7 +17,6 @@ input NewAppt {
 }
 
 input UpdateAppt {
-    id: ID!
     name: String
     startDate: String
     endDate: String
@@ -38,7 +36,7 @@ type Query {
 }
 
 type Mutation {
-    createAppt(input: NewAppt): Appointment!
-    updateAppt(input: UpdateAppt): Appointment
+    createAppt(user: ID!, input: NewAppt): Appointment!
+    updateAppt(id: ID!, input: UpdateAppt): Appointment
     deleteAppt(id: ID!): Appointment
 }

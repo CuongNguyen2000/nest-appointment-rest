@@ -14,7 +14,6 @@ export enum EnumUserRole {
 }
 
 export class NewAppt {
-    user: string;
     name: string;
     startDate: string;
     endDate: string;
@@ -22,7 +21,6 @@ export class NewAppt {
 }
 
 export class UpdateAppt {
-    id: string;
     name?: Nullable<string>;
     startDate?: Nullable<string>;
     endDate?: Nullable<string>;
@@ -77,9 +75,9 @@ export abstract class IQuery {
 }
 
 export abstract class IMutation {
-    abstract createAppt(input?: Nullable<NewAppt>): Appointment | Promise<Appointment>;
+    abstract createAppt(user: string, input?: Nullable<NewAppt>): Appointment | Promise<Appointment>;
 
-    abstract updateAppt(input?: Nullable<UpdateAppt>): Nullable<Appointment> | Promise<Nullable<Appointment>>;
+    abstract updateAppt(id: string, input?: Nullable<UpdateAppt>): Nullable<Appointment> | Promise<Nullable<Appointment>>;
 
     abstract deleteAppt(id: string): Nullable<Appointment> | Promise<Nullable<Appointment>>;
 

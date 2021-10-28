@@ -14,7 +14,7 @@ import { LoggerService } from './../logger/logger.service';
 
 @Injectable()
 export class AppointmentsService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService) { }
     private readonly logger: LoggerService = new Logger(
         AppointmentsService.name,
     );
@@ -73,17 +73,17 @@ export class AppointmentsService {
     }
 
     // Create an appointment
-    async createAppt(input: createApptDTO): Promise<Appointment> {
-        console.log(typeof input.user)
+    async createAppt(user: number, input: createApptDTO): Promise<Appointment> {
+        // console.log(typeof input.user)
         const userExist = await this.prisma.user.findUnique({
             where: {
-                id: parseInt(input.user),
+                id: user
             },
         });
 
         if (!userExist) {
             this.logger.warn('Tried to access an user that does not exist');
-            throw new UserNotFoundException(parseInt(input.user));
+            throw new UserNotFoundException(user)
         }
 
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -112,6 +112,9 @@ export class AppointmentsService {
             return await this.prisma.appointment.update({
                 where: { id },
                 data: { ...params },
+                include: {
+                    user: true, // Return all fields
+                },
             });
         } catch (error) {
             if (
@@ -123,7 +126,6 @@ export class AppointmentsService {
             throw error;
         }
     }
-
     // delete an appointment
     async deleteAppt(id: number): Promise<Appointment> {
         try {

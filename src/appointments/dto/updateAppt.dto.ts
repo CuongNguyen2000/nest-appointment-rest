@@ -2,6 +2,7 @@ import { IsString } from 'class-validator';
 import { UpdateAppt } from '../../graphql';
 
 export class updateApptDTO {
+
     @IsString()
     name: string;
 

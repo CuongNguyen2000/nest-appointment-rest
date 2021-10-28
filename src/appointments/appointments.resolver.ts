@@ -24,15 +24,18 @@ export class AppointmentsResolver {
 
     @Mutation('createAppt')
     @UsePipes(new ValidationPipe())
-    async create(@Args('input') input: createApptDTO) {
+    async create(
+        @Args('user', ParseIntPipe) user: number,
+        @Args('input') input: createApptDTO) {
         const errors = checkValid.validate(input);
         if (errors.length > 0) {
             throw new BadRequestException(errors);
         }
-        return this.apptService.createAppt(input);
+        return this.apptService.createAppt(user,input);
     }
 
     @Mutation('updateAppt')
+    // @UsePipes(new ValidationPipe())
     async update(
         @Args('id', ParseIntPipe) id: number,
         @Args('input') args: updateApptDTO,
