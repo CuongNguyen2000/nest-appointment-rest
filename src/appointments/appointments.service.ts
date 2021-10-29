@@ -1,6 +1,6 @@
 import { LoggerService } from './../logger/logger.service';
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from './../prisma/prisma.service';
 import { Appointment } from '@prisma/client';
 import { createApptDTO } from './dto/createAppt.dto';
 import { updateApptDTO } from './dto/updateAppt.dto';
