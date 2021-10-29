@@ -1,6 +1,6 @@
 import { LoggerService } from './../logger/logger.service';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from './../prisma/prisma.service';
 import { User } from '@prisma/client';
 import { createUserDTO } from './dto/createUser.dto';
 import { updateUserDTO } from './dto/updateUser.dto';

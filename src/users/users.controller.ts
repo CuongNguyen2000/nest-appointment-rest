@@ -25,7 +25,7 @@ import {
     ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/strategy/jwt-auth.guard';
+import { JwtAuthGuard } from './../auth/strategy/jwt-auth.guard';
 
 @ApiBearerAuth()
 @Controller('users')
@@ -34,7 +34,7 @@ export class UsersController {
     constructor(private readonly userService: UsersService) {}
     private readonly logger: LoggerService = new Logger(UsersController.name);
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Get()
     @ApiOkResponse({ type: UserEntity, isArray: true })
     async findAllUsers() {
