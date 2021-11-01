@@ -12,6 +12,7 @@ import {
     Post,
     UseGuards,
     UseInterceptors,
+    UsePipes,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { createUserDTO } from './dto/createUser.dto';
@@ -26,6 +27,7 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from './../auth/strategy/jwt-auth.guard';
+import { ValidationPipe } from './../shared/validation.pipe';
 
 @ApiBearerAuth()
 @Controller('users')
@@ -42,7 +44,7 @@ export class UsersController {
         return this.userService.users();
     }
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     @Get(':id')
     @ApiOkResponse({ type: UserEntity })
@@ -51,8 +53,9 @@ export class UsersController {
         return new UserEntity(await this.userService.user(id));
     }
 
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @Post('createUser')
+    @UsePipes(new ValidationPipe())
     @ApiCreatedResponse({
         type: createUserDTO,
         description: 'The record has been successfully created.',
