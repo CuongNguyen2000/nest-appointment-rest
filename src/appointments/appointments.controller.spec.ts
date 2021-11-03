@@ -59,4 +59,14 @@ describe('AppointmentsController', () => {
             expect(spy).toBeCalledTimes(0);
         });
     })
+
+    //should be throw an error when get an appointment by id 
+    describe("getById", () => {
+        it("should throw an error when get an appointment by id", async () => {
+            const spy = jest.spyOn(appointmentsService, "appointment").mockImplementation(async (): Promise<any> => {
+                throw new ApptNotFoundException(1);
+            });
+            expect(spy).toBeCalledTimes(0);
+        });
+    })
 });
