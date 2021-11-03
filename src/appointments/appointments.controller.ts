@@ -30,7 +30,7 @@ import {
 } from '@nestjs/swagger';
 import { ValidationPipe } from '../shared/validation.pipe';
 import { checkValid } from './dto/checkValid';
-import { JwtAuthGuard } from 'src/auth/strategy/jwt-auth.guard';
+import { JwtAuthGuard } from './../auth/strategy/jwt-auth.guard';
 
 @ApiBearerAuth()
 @Controller('appointments')
