@@ -2,10 +2,12 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service'
 import { PrismaService } from '../prisma/prisma.service'
 import { LoggerService } from '../logger/logger.service'
-import { Role } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import { NotFoundException, INestApplication, BadRequestException } from '@nestjs/common';
 import { createUserDTO } from './dto/createUser.dto';
 import { PrismaClientValidationError, PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserNotFoundException } from './../exceptions/NotFound.exception';
 
 const example: createUserDTO = {
     email: "cn1122000@gmail.com",
@@ -18,25 +20,47 @@ const example: createUserDTO = {
 describe('UserController', () => {
 
     let usersController: UsersController;
-    let usersService: UsersService
-    let prismaService: PrismaService
+    let usersService: UsersService;
+    let prismaService: PrismaService;
 
-    beforeAll(() => console.log('Running test'))
-    beforeEach(() => {
-        prismaService = new PrismaService();
-        usersService = new UsersService(prismaService);
-        usersController = new UsersController(usersService);
+    beforeAll(() => console.log('Running test User controller'))
+
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [UsersController],
+            providers: [
+                UsersService,
+                PrismaService,
+                LoggerService
+            ]
+        }).compile();
+
+        usersController = module.get<UsersController>(UsersController);
+        usersService = module.get<UsersService>(UsersService);
+        prismaService = module.get<PrismaService>(PrismaService);
     })
 
-    it('should return a list of users', async () => {
-        const result = [];
-        const spy = jest
-            .spyOn(usersService, 'users')
-            .mockImplementation((): any => result)
-
-        expect(await usersController.findAllUsers())
-            .toBe(result);
+    // should return list of users
+    it('should return list of users', async () => {
+        const result = [{
+            id: "1",
+            email: "",
+            firstName: "",
+            lastName: "",
+            birthdate: "",
+            role: ""
+        }]
+        const spy = jest.spyOn(usersService, 'users').mockImplementation(async (): Promise<any> => result);
+        expect(await usersController.findAllUsers()).toBe(result);
         expect(spy).toBeCalledTimes(1);
+    })
+
+    //should throw error when user not found
+    it('should throw error when user not found', async () => {
+        // const result = new UserNotFoundException(1);
+        const spy = jest.spyOn(usersService, 'user').mockImplementation(async (): Promise<any> => { throw new UserNotFoundException(1) });
+        expect(spy).toBeCalledTimes(0);
+        // expect(await usersController.findOneUser(1)).toBe(result);
     })
 
     it('should throw error when creating an already existing user', async () => {
@@ -61,6 +85,50 @@ describe('UserController', () => {
         expect(returnUser).toBeCalledTimes(0);
     })
 
+    // should be throw bad request exception when creating user with invalid data
+    it('should be throw bad request exception when creating user with invalid data', async () => {
+        const createUserMock = jest.spyOn(usersService, 'createUser');
+        const userExistMock = jest
+            .spyOn(prismaService.user, 'findUnique')
+            .mockImplementation((): any => new createUserDTO())
+
+        const returnUser = jest.spyOn(prismaService.user, 'create')
+            .mockImplementation((): any => { throw new BadRequestException() })
+
+        try {
+            await usersController.createOneUser(example);
+        }
+        catch (error) {
+            expect(error).toBeInstanceOf(BadRequestException)
+        }
+
+        expect(createUserMock).toBeCalledTimes(1);
+        expect(userExistMock).toHaveBeenCalledTimes(1);
+        expect(returnUser).toBeCalledTimes(0);
+    })
+
+    // should throw not found exception when updating user that does not exist
+    it('should throw not found exception when updating user that does not exist', async () => {
+        const updateUserMock = jest.spyOn(usersService, 'updateUser');
+        const userExistMock = jest
+            .spyOn(prismaService.user, 'findUnique')
+            .mockImplementation((): any => new createUserDTO())
+
+        const returnUser = jest.spyOn(prismaService.user, 'update')
+            .mockImplementation((): any => { throw new UserNotFoundException(1) })
+
+        try {
+            await usersController.updateOneUser(1, example);
+        }
+        catch (error) {
+            expect(error).toBeInstanceOf(NotFoundException)
+        }
+
+        expect(updateUserMock).toBeCalledTimes(1);
+        expect(userExistMock).toHaveBeenCalledTimes(0);
+        expect(returnUser).toBeCalledTimes(1);
+    })
+
     it('should throw bad request when delete an user', async () => {
 
         const deleteSpy = jest.spyOn(usersService, 'deleteUser');
@@ -80,22 +148,5 @@ describe('UserController', () => {
         expect(findSpy).toHaveBeenCalledTimes(1);
         expect(deleteSuccessfullSpy).toBeCalledTimes(0);
     })
-
-    // it('should delete successfully when delete an user', async () => {
-
-    //     const deleteSpy = jest.spyOn(usersService, 'remove');
-    //     const findSpy = jest.spyOn(prismaSevice.user, 'findUnique')
-    //         .mockImplementation((): any => new CreateUserDto)
-    //     const deleteSuccessfullSpy = jest.spyOn(prismaSevice.user, 'delete')
-    //         .mockImplementation((): any => undefined)
-
-    //     await usersController.remove(1);
-
-
-
-    //     expect(deleteSpy).toBeCalledTimes(1);
-    //     expect(findSpy).toHaveBeenCalledTimes(1);
-    //     expect(deleteSuccessfullSpy).toBeCalledTimes(1);
-    // })
 
 })
