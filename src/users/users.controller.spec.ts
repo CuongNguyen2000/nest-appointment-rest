@@ -42,14 +42,7 @@ describe('UserController', () => {
 
     // should return list of users
     it('should return list of users', async () => {
-        const result = [{
-            id: "1",
-            email: "",
-            firstName: "",
-            lastName: "",
-            birthdate: "",
-            role: ""
-        }]
+        const result = [];
         const spy = jest.spyOn(usersService, 'users').mockImplementation(async (): Promise<any> => result);
         expect(await usersController.findAllUsers()).toBe(result);
         expect(spy).toBeCalledTimes(1);
@@ -71,7 +64,7 @@ describe('UserController', () => {
             .mockImplementation((): any => new createUserDTO())
 
         const returnUser = jest.spyOn(prismaService.user, 'create')
-            .mockImplementation((): any => { example })
+            .mockImplementation((): any => { throw new BadRequestException('User is already exist'); })
 
         try {
             await usersController.createOneUser(example);
@@ -129,11 +122,15 @@ describe('UserController', () => {
         expect(returnUser).toBeCalledTimes(1);
     })
 
-    it('should throw bad request when delete an user', async () => {
+    // should throw an error when delete an user
+    it('should throw an error when delete an user', async () => {
+        const deleteUserMock = jest.spyOn(usersService, 'deleteUser');
+        const userExistMock = jest
+            .spyOn(prismaService.user, 'findUnique')
+            .mockImplementation((): any => new createUserDTO())
 
-        const deleteSpy = jest.spyOn(usersService, 'deleteUser');
-        const findSpy = jest.spyOn(prismaService.user, 'findUnique')
-            .mockImplementation((): any => undefined)
+        const returnUser = jest.spyOn(prismaService.user, 'delete')
+            .mockImplementation((): any => { throw new UserNotFoundException(1) })
 
         try {
             await usersController.deleteOneUser(1);
@@ -141,12 +138,10 @@ describe('UserController', () => {
         catch (error) {
             expect(error).toBeInstanceOf(NotFoundException)
         }
-        const deleteSuccessfullSpy = jest.spyOn(prismaService.user, 'delete')
-            .mockImplementation((): any => undefined)
 
-        expect(deleteSpy).toBeCalledTimes(1);
-        expect(findSpy).toHaveBeenCalledTimes(1);
-        expect(deleteSuccessfullSpy).toBeCalledTimes(0);
+        expect(deleteUserMock).toBeCalledTimes(1);
+        expect(userExistMock).toHaveBeenCalledTimes(1);
+        expect(returnUser).toBeCalledTimes(1);
     })
 
 })
