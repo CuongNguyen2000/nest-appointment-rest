@@ -9,12 +9,12 @@ export class UsersResolver {
     constructor(private readonly userService: UsersService) {}
 
     @Query('users')
-    async posts() {
+    async users() {
         return this.userService.users();
     }
 
     @Query('user')
-    async post(@Args('id', ParseIntPipe) id: number) {
+    async user(@Args('id', ParseIntPipe) id: number) {
         return this.userService.user(id);
     }
 

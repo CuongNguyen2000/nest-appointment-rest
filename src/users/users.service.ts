@@ -1,22 +1,18 @@
 import {
     BadRequestException,
-    HttpException,
-    HttpStatus,
     Injectable,
     Logger,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from './../prisma/prisma.service';
 import { User } from '@prisma/client';
 import { createUserDTO } from './dto/createUser.dto';
 import { updateUserDTO } from './dto/updateUser.dto';
 import { UserNotFoundException } from '../exceptions/NotFound.exception';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
-import { PrismaError } from '../utils/prismaError';
 import { LoggerService } from './../logger/logger.service';
 
 @Injectable()
 export class UsersService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService) { }
     private readonly logger: LoggerService = new Logger(UsersService.name);
 
     // Create a new
@@ -68,21 +64,20 @@ export class UsersService {
 
     // Update a user
     async updateUser(id: number, params: updateUserDTO): Promise<User> {
-        try {
-            return await this.prisma.user.update({
-                where: { id },
-                data: { ...params },
-            });
-        } catch (error) {
-            if (
-                error instanceof PrismaClientKnownRequestError &&
-                error.code === PrismaError.RecordDoesNotExist
-            ) {
-                this.logger.warn('Tried to access a user that does not exist');
-                throw new UserNotFoundException(id);
-            }
-            throw error;
+
+        const user = await this.prisma.user.findUnique({
+            where: { id },
+        });
+
+        if (!user) {
+            this.logger.warn('Tried to access a user that does not exist');
+            throw new UserNotFoundException(id);
         }
+
+        return await this.prisma.user.update({
+            where: { id },
+            data: { ...params },
+        });
     }
 
     // delete an user

@@ -9,11 +9,11 @@ export class createUserDTO extends NewUser {
 
     @IsString()
     @IsNotEmpty()
-    readonly first_name: string;
+    readonly firstName: string;
 
     @IsString()
     @IsNotEmpty()
-    readonly last_name: string;
+    readonly lastName: string;
 
     @IsString()
     readonly birthdate: string;
