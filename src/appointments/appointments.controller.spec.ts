@@ -11,8 +11,6 @@ describe('AppointmentsController', () => {
     let appointmentsService: AppointmentsService;
     let prismaService: PrismaService;
 
-    beforeAll(() => console.log('Running test Appointment controller'))
-
     beforeEach(async () => {
         const module = await Test.createTestingModule({
             controllers: [AppointmentsController],

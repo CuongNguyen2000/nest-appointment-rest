@@ -23,8 +23,6 @@ describe('UserController', () => {
     let usersService: UsersService;
     let prismaService: PrismaService;
 
-    beforeAll(() => console.log('Running test User controller'))
-
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [UsersController],
