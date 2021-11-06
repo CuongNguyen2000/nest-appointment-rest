@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Admin } from '@prisma/client';
 import { LoginAdminDto } from './dto/loginAdmin.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from './../prisma/prisma.service';
 import { LoggerService } from './../logger/logger.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
